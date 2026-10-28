@@ -1,0 +1,87 @@
+using System.Net;
+
+namespace CosmosCalendar.Web;
+
+/// <summary>
+/// Settings of the site server, the "Web" section of appsettings.json; the
+/// command line overrides them (see <see cref="WebServerApp.SwitchMappings"/>).
+/// </summary>
+public sealed class WebOptions
+{
+    /// <summary>Port the site listens on.</summary>
+    public int Port { get; set; } = 8780;
+
+    /// <summary>Address to listen on; empty means every address of the machine.</summary>
+    public string Host { get; set; } = "";
+
+    /// <summary>
+    /// The sync server (CalendarServer) the site talks to: "127.0.0.1:8765",
+    /// "http://host:port" or "https://host". Its accounts are the accounts of
+    /// the site, and its records are what the site shows.
+    /// </summary>
+    public string Upstream { get; set; } = "127.0.0.1:8765";
+
+    /// <summary>
+    /// The address the planners use for the same server, put into the share
+    /// links the site hands out (calendar-planner://share?server=...). Empty
+    /// means the upstream address as it is - right when both are one machine
+    /// on the home network, wrong behind a proxy.
+    /// </summary>
+    public string PublicServerAddress { get; set; } = "";
+
+    /// <summary>
+    /// Folder of the site itself (CalendarWeb/site). Empty means the first of
+    /// "site" next to the program and "../CalendarWeb/site" up from it.
+    /// </summary>
+    public string WebRoot { get; set; } = "";
+
+    /// <summary>
+    /// "auto" marks the session cookie Secure when the request came over HTTPS
+    /// (as the proxy in front reports it), "always" and "never" say so outright.
+    /// </summary>
+    public string SecureCookie { get; set; } = "auto";
+
+    /// <summary>
+    /// Proxies whose X-Forwarded-For and X-Forwarded-Proto are believed. Without
+    /// them the client is the address the connection came from.
+    /// </summary>
+    public List<string> TrustedProxies { get; set; } = new();
+
+    /// <summary>How long an exchange may take; the planner waits as long.</summary>
+    public int SyncTimeoutSeconds { get; set; } = 60;
+
+    /// <summary>How long any other request may take.</summary>
+    public int RequestTimeoutSeconds { get; set; } = 15;
+
+    /// <summary>Largest request body; a sync carrying melodies is the big one.</summary>
+    public int MaxBodyMegabytes { get; set; } = 64;
+
+    /// <summary>The upstream as a base URI, http:// unless it says otherwise.</summary>
+    public Uri UpstreamUri()
+    {
+        var text = Upstream.Trim();
+        if (!text.Contains("://", StringComparison.Ordinal))
+            text = "http://" + text;
+        return new Uri(text.TrimEnd('/') + "/");
+    }
+
+    /// <summary>What the planners call the server: the public address, else the upstream.</summary>
+    public string ServerAddressForLinks()
+    {
+        if (!string.IsNullOrWhiteSpace(PublicServerAddress))
+            return PublicServerAddress.Trim();
+        var uri = UpstreamUri();
+        // The planner writes a plain host:port for its home server and a full
+        // URL for anything behind TLS; the link carries it the same way.
+        return uri.Scheme == Uri.UriSchemeHttp ? uri.Authority : uri.GetLeftPart(UriPartial.Authority);
+    }
+
+    public IEnumerable<IPAddress> TrustedProxyAddresses()
+    {
+        foreach (var text in TrustedProxies)
+        {
+            if (IPAddress.TryParse(text.Trim(), out var address))
+                yield return address;
+        }
+    }
+}

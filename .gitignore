@@ -1,0 +1,35 @@
+# Build output of dotnet: bin/ and obj/ of every project, and the folder
+# publish.bat lays the site server out in.
+bin/
+obj/
+/publish/
+
+# Test results and coverage
+TestResults/
+*.trx
+coverage*.xml
+
+# A filled in copy of the settings for one machine; the tracked
+# appsettings.json carries the defaults.
+appsettings.*.local.json
+*.log
+
+# IDE and editors
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.swp
+*~
+
+# Working folders of the coding tools: scratch worktrees and machine-local
+# settings.
+.claude/
+.kilo/
+.kilocode/
+
+# OS junk
+.DS_Store
+Thumbs.db
+Desktop.ini

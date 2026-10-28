@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>CosmosCalendar.Web</RootNamespace>
+    <AssemblyName>CalendarWebServer</AssemblyName>
+    <Version>1.0.0</Version>
+    <Product>Космос календарь: сайт</Product>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <!-- The site is served from the CalendarWeb checkout or from a folder
+         given on the command line; nothing of it is copied into the build. -->
+    <EnableDefaultContentItems>false</EnableDefaultContentItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="CalendarWebServer.Tests" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,10 @@
+# cmd.exe needs CRLF: with LF-only line endings a caret continuation silently
+# falls apart and the next line runs as a command of its own.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+*.cs text
+*.csproj text
+*.sln text eol=crlf
+*.json text
+*.md text
