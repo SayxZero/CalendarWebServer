@@ -1,0 +1,19 @@
+CalendarWebServer для Linux — бэкенд сайта «Космос календаря»
+
+Программа .NET 10, зависимая от среды выполнения: ей нужен ASP.NET Core 10.
+Собрана в Docker на Ubuntu 26.04 LTS. Рядом с программой — сам сайт (site/),
+appsettings.json — её настройки (раздел "Web").
+
+Что нужно поставить (Ubuntu 26.04; в других дистрибутивах — пакет ASP.NET
+Core Runtime 10 или установка от Microsoft):
+
+  sudo apt install aspnetcore-runtime-10.0
+
+Запуск перед сервером синхронизации на той же машине:
+
+  dotnet CalendarWebServer.dll --host 127.0.0.1 --port 8780 --upstream 127.0.0.1:8765
+
+Наружу сайт выставляется обратным прокси с HTTPS (nginx, Caddy), а бэкенд
+прописывается серверу синхронизации доверенным прокси (trusted_proxies в его
+server.ini), иначе неверные пароли считаются по адресу бэкенда. Подробно —
+README.md проекта: https://github.com/SayxZero/CalendarWebServer

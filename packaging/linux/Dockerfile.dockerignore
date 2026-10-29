@@ -1,0 +1,11 @@
+# The context of packaging/linux/Dockerfile: only what the build reads. bin
+# and obj of a Windows build carry its paths (project.assets.json) and would
+# break the restore inside the image.
+*
+!CalendarWebServer.sln
+!src
+!tests
+!packaging/linux
+**/bin
+**/obj
+**/TestResults

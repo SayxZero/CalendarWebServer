@@ -53,6 +53,29 @@ publish.bat -out D:\web     :: в другую папку
 Опубликованному серверу нужен ASP.NET Core Runtime 10; сайт он находит в
 `site` рядом с собой.
 
+### Linux: Docker
+
+`packaging/linux/Dockerfile` собирает бэкенд на Ubuntu 26.04 LTS с .NET SDK
+10 из её репозиториев, прогоняет `dotnet test` и выдаёт архив
+`CalendarWebServer-<v>-linux-x64.tar.gz` (программа, `site/` и
+`INSTALL.txt`; нужен пакет `aspnetcore-runtime-10.0`) и образ. Контекст —
+корень проекта, сайт — вторым контекстом:
+
+```bash
+docker build -f packaging/linux/Dockerfile --build-context site=../CalendarWeb/site \
+    --target dist --output type=local,dest=out .
+docker build -f packaging/linux/Dockerfile --build-context site=../CalendarWeb/site \
+    --target runtime -t calendar-web .
+docker run -d -p 8780:8780 -v calendar-web-data:/data calendar-web --upstream <сервер>:8765
+```
+
+В образе бэкенд — не root (`web`), папка данных (`legal.json`, оферта) — том
+`/data`, ключи пишутся после имени образа. Тест с настоящим сервером при
+сборке образа пропускается: шаг сборки других контейнеров не видит. На
+Windows `build-linux.ps1` зонтичного репозитория собирает всё вместе с
+сервером синхронизации (Docker Engine в WSL) и прогоняет тесты ещё раз —
+против образа сервера, уже с этим тестом.
+
 ## Запуск
 
 ```bash
@@ -163,5 +186,7 @@ tests/CalendarWebServer.Tests/
   Harness.cs          бэкенд перед поддельным сервером синхронизации
   ProxyTests.cs       тесты прокси, cookie, ограничителя, раздачи
   RealServerTests.cs  с настоящим сервером (WEB_TEST_SERVER)
+packaging/linux/      сборка в Docker на Ubuntu 26.04: Dockerfile (тесты,
+                      архив, образ), его .dockerignore, INSTALL.txt архива
 run-web.bat, publish.bat
 ```
