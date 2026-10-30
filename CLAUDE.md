@@ -22,7 +22,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 export DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1
 dotnet build CalendarWebServer.sln
-dotnet test CalendarWebServer.sln                                   # 23 теста + 1 пропущен
+dotnet test CalendarWebServer.sln                                   # 36 тестов + 1 пропущен
 WEB_TEST_SERVER=127.0.0.1:8766 dotnet test CalendarWebServer.sln    # и тест с настоящим сервером
 ```
 
@@ -42,7 +42,7 @@ WEB_TEST_SERVER=127.0.0.1:8766 dotnet test CalendarWebServer.sln    # и тес�
 
 ```bash
 cmd //c "D:\\Prog\\Calendar\\CalendarServer\\run-server.bat" -p 8766 -d <папка в scratchpad> -noui   # в фоне
-./src/CalendarWebServer/bin/Debug/net10.0/CalendarWebServer.exe --host 127.0.0.1 -p 8780 -u 127.0.0.1:8766 -w D:/Prog/Calendar/CalendarWeb/site   # в фоне
+./src/CalendarWebServer/bin/Debug/net10.0/CalendarWebServer.exe --host 127.0.0.1 -p 8780 -u 127.0.0.1:8766 -w D:/Prog/Calendar/CalendarWeb/site -d <папка в scratchpad>   # в фоне
 ```
 
 `run-server.bat` — только полным путём (`cmd` агента не ищет программы в
@@ -60,6 +60,11 @@ cmd //c "D:\\Prog\\Calendar\\CalendarServer\\run-server.bat" -p 8766 -d <пап�
   `Long: true`.
 - Ключ сеанса никогда не попадает ни в тело ответа странице, ни в журнал; в
   журнал не пишется и строка запроса (там бывает токен ссылки).
+- Данные владельца сайта (`legal.json`, `pricing.json`, договор оферты, APK) — только в папке
+  данных (`-d`), не в `site/` и не рядом с программой: их перезаписывает
+  обновление. В репозитории — только образец с пустыми полями
+  (`legal.example.json`, `pricing.example.json`). Для проверок — своя папка в scratchpad с выдуманными
+  значениями, а не настоящие данные владельца.
 - `.bat` — CRLF и без кириллицы (`../ISSUES.md`, «Сборка и окружение Windows»).
 - Команда `dotnet` в Git Bash печатает по-русски; телеметрию и логотип гасят
   переменные выше.

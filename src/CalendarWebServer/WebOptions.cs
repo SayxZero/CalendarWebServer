@@ -36,6 +36,15 @@ public sealed class WebOptions
     public string WebRoot { get; set; } = "";
 
     /// <summary>
+    /// Folder of what the operator puts there and an update must not touch:
+    /// legal.json with the legal details of the presentation page and the
+    /// file of the offer. Empty means CalendarPlanner/CalendarWeb in the
+    /// user's application data (%APPDATA% on Windows, ~/.local/share on
+    /// Linux), the way the sync server keeps its own folder.
+    /// </summary>
+    public string DataDir { get; set; } = "";
+
+    /// <summary>
     /// "auto" marks the session cookie Secure when the request came over HTTPS
     /// (as the proxy in front reports it), "always" and "never" say so outright.
     /// </summary>
@@ -74,6 +83,19 @@ public sealed class WebOptions
         // The planner writes a plain host:port for its home server and a full
         // URL for anything behind TLS; the link carries it the same way.
         return uri.Scheme == Uri.UriSchemeHttp ? uri.Authority : uri.GetLeftPart(UriPartial.Authority);
+    }
+
+    /// <summary>The data folder as a full path; it need not exist.</summary>
+    public string ResolveDataDir()
+    {
+        if (!string.IsNullOrWhiteSpace(DataDir))
+            return Path.GetFullPath(DataDir.Trim());
+        // Qt's AppDataLocation of the server: Roaming on Windows, the XDG data
+        // folder elsewhere.
+        var root = Environment.GetFolderPath(OperatingSystem.IsWindows()
+            ? Environment.SpecialFolder.ApplicationData
+            : Environment.SpecialFolder.LocalApplicationData);
+        return Path.Combine(root, "CalendarPlanner", "CalendarWeb");
     }
 
     public IEnumerable<IPAddress> TrustedProxyAddresses()

@@ -117,8 +117,8 @@ public sealed class ApiProxy
         if (token is not null && route.Kind != RouteKind.SignIn)
             upstream.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         upstream.Headers.Accept.ParseAdd("application/json");
-        // The server does not read these yet; a version that learns to count
-        // wrong passwords per visitor behind a proxy will find them here.
+        // The visitor instead of whatever the page sent: the server counts its
+        // wrong passwords by it when this backend is in its trusted_proxies.
         var client = context.Connection.RemoteIpAddress;
         if (client is not null)
             upstream.Headers.TryAddWithoutValidation("X-Forwarded-For", client.ToString());

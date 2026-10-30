@@ -15,6 +15,9 @@ if (args.Contains("--help") || args.Contains("-h") || args.Contains("/?"))
               --host <адрес>          слушать один адрес (по умолчанию все)
           -u, --upstream <адрес>      сервер синхронизации (127.0.0.1:8765)
           -w, --web-root <папка>      папка сайта (CalendarWeb/site)
+          -d, --data-dir <папка>      папка данных: legal.json и файл оферты
+                                      (CalendarPlanner/CalendarWeb в %APPDATA%,
+                                      на Linux — в ~/.local/share)
               --public-server <адрес> адрес сервера для ссылок общего доступа
               --secure-cookie <режим> auto, always или never (auto)
               --trusted-proxy <адрес> прокси, которому верить в X-Forwarded-For

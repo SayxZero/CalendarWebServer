@@ -20,6 +20,8 @@ public static class WebServerApp
         ["--upstream"] = "Web:Upstream",
         ["-w"] = "Web:WebRoot",
         ["--web-root"] = "Web:WebRoot",
+        ["-d"] = "Web:DataDir",
+        ["--data-dir"] = "Web:DataDir",
         ["--public-server"] = "Web:PublicServerAddress",
         ["--secure-cookie"] = "Web:SecureCookie",
         ["--trusted-proxy"] = "Web:TrustedProxies:0",
@@ -108,6 +110,9 @@ public static class WebServerApp
             serverAddress = options.ServerAddressForLinks(),
         }));
         app.MapGet("/web/health", (HttpClient client, CancellationToken cancel) => Health(client, options, cancel));
+        LegalInfo.Map(app, options);
+        PricingInfo.Map(app, options);
+        AppDownloads.Map(app, options);
 
         var root = ResolveWebRoot(options);
         if (root is null)
@@ -134,6 +139,7 @@ public static class WebServerApp
         app.Logger.LogInformation("Космос календарь: сайт {Version}, порт {Port}", Version, options.Port);
         app.Logger.LogInformation("Сервер синхронизации: {Upstream}", options.UpstreamUri());
         app.Logger.LogInformation("Папка сайта: {Root}", root ?? "(нет)");
+        app.Logger.LogInformation("Папка данных: {DataDir}", options.ResolveDataDir());
     }
 
     /// <summary>
