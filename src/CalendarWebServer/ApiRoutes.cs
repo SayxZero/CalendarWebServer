@@ -33,6 +33,8 @@ public static class ApiRoutes
         new ApiRoute("/api/me", new[] { "GET" }, RouteKind.Account),
         new ApiRoute("/api/profile", new[] { "POST" }, RouteKind.Account),
         new ApiRoute("/api/password", new[] { "POST" }, RouteKind.Account),
+        new ApiRoute("/api/sessions", new[] { "GET" }, RouteKind.Account),
+        new ApiRoute("/api/sessions/revoke", new[] { "POST" }, RouteKind.Account),
         new ApiRoute("/api/sync", new[] { "POST" }, RouteKind.Account, Long: true),
         new ApiRoute("/api/record", new[] { "GET" }, RouteKind.Account),
         new ApiRoute("/api/share", new[] { "GET", "POST" }, RouteKind.Account, Long: true),

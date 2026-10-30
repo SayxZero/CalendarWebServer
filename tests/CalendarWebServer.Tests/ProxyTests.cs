@@ -170,6 +170,27 @@ public sealed class ProxyTests
     }
 
     [TestMethod]
+    public async Task SessionsOfTheAccountGoThroughWithItsKey()
+    {
+        using (var closed = await _h.Client.GetAsync("/api/sessions"))
+            Assert.AreEqual(HttpStatusCode.Unauthorized, closed.StatusCode);
+
+        await _h.SignInAsync();
+        using (var list = await _h.Client.GetAsync("/api/sessions"))
+        {
+            Assert.AreEqual(HttpStatusCode.OK, list.StatusCode);
+            StringAssert.Contains(await list.Content.ReadAsStringAsync(), "ИИ-агент · Клиент");
+        }
+        using (var revoke = await _h.Client.SendAsync(_h.Post("/api/sessions/revoke", """{"id":"abc"}""")))
+            Assert.AreEqual(HttpStatusCode.OK, revoke.StatusCode);
+        using (var unknown = await _h.Client.SendAsync(_h.Post("/api/sessions/revoke", """{"id":"gone"}""")))
+            Assert.AreEqual(HttpStatusCode.NotFound, unknown.StatusCode);
+
+        Assert.AreEqual(RouteKind.Account, ApiRoutes.Find("/api/sessions")!.Kind);
+        Assert.AreEqual(RouteKind.Account, ApiRoutes.Find("/api/sessions/revoke")!.Kind);
+    }
+
+    [TestMethod]
     public async Task RetryAfterOfABusyServerReachesThePage()
     {
         await _h.SignInAsync();

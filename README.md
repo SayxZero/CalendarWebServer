@@ -201,7 +201,7 @@ CalendarWebServer --help
 | `GET /web/legal/offer` | файл договора оферты из папки данных (`inline`, своё имя); 404 `not_found`, если его нет |
 | `POST /api/login`, `/api/register` | передаёт серверу; ключ сеанса из ответа кладёт в cookie `cosmos_session`, странице — ответ без ключа |
 | `POST /api/logout` | передаёт серверу с ключом и забывает cookie, что бы тот ни ответил |
-| `GET /api/ping`, `/api/me`, `/api/record`, `/api/share`, `/api/share/peek`; `POST /api/profile`, `/api/password`, `/api/sync`, `/api/share`, `/api/share/member`, `/api/share/link`, `/api/share/join`, `/api/share/leave` | передаёт серверу с `Authorization: Bearer <ключ из cookie>`; ответ — как есть, с `Retry-After` и `Allow` |
+| `GET /api/ping`, `/api/me`, `/api/sessions`, `/api/record`, `/api/share`, `/api/share/peek`; `POST /api/profile`, `/api/password`, `/api/sessions/revoke`, `/api/sync`, `/api/share`, `/api/share/member`, `/api/share/link`, `/api/share/join`, `/api/share/leave` | передаёт серверу с `Authorization: Bearer <ключ из cookie>`; ответ — как есть, с `Retry-After` и `Allow` |
 
 Тела запросов и ответов — как у сервера синхронизации (README
 CalendarServer, «API»). Свои ответы бэкенда — того же вида
@@ -238,7 +238,7 @@ CalendarServer, «API»). Свои ответы бэкенда — того же
 dotnet test CalendarWebServer.sln
 ```
 
-51 тест и один пропущенный (MSTest). Бэкенд поднимается на свободном порту перед поддельным
+52 теста и один пропущенный (MSTest). Бэкенд поднимается на свободном порту перед поддельным
 сервером синхронизации, который отвечает как настоящий и запоминает, что до
 него дошло: cookie и ключ, заголовок и `Origin`, белый список, ограничитель
 входа, 401 и выход, `Retry-After`, недоступный сервер, раздача сайта и

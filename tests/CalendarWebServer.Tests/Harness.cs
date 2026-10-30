@@ -159,6 +159,18 @@ public sealed class Harness : IAsyncDisposable
                 case "/api/record":
                     await context.Response.WriteAsync("""{"found":false}""");
                     return;
+                case "/api/sessions":
+                    await context.Response.WriteAsync("""{"sessions":[{"id":"abc","device":"ИИ-агент · Клиент"}]}""");
+                    return;
+                case "/api/sessions/revoke":
+                    if (body.Contains("gone"))
+                    {
+                        context.Response.StatusCode = 404;
+                        await context.Response.WriteAsync("""{"error":"not_found","message":"Такого сеанса уже нет"}""");
+                        return;
+                    }
+                    await context.Response.WriteAsync("{}");
+                    return;
                 default:
                     await context.Response.WriteAsync("{}");
                     return;
