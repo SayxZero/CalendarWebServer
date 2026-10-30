@@ -65,6 +65,47 @@ public sealed class WebOptions
     /// <summary>Largest request body; a sync carrying melodies is the big one.</summary>
     public int MaxBodyMegabytes { get; set; } = 64;
 
+    /// <summary>
+    /// The address this site is known by from outside, "https://example.org": the
+    /// issuer of the OAuth of the MCP mode and the base of its /mcp. Behind a proxy
+    /// nothing else can tell it.
+    /// </summary>
+    public string PublicUrl { get; set; } = "";
+
+    /// <summary>The MCP service (CalendarWebMCP), "127.0.0.1:8790". Empty switches the MCP mode off.</summary>
+    public string McpUpstream { get; set; } = "";
+
+    /// <summary>
+    /// Seals the tokens of the MCP mode: at least 32 characters, the same across
+    /// restarts, or every agent has to connect again. From the settings or the
+    /// environment (Web__McpSecret), not the command line, where anybody can read it.
+    /// </summary>
+    public string McpSecret { get; set; } = "";
+
+    /// <summary>The tests read the documents of clients from a table instead of the Internet.</summary>
+    public Func<Uri, CancellationToken, Task<string?>>? ClientMetadataFetcher { get; set; }
+
+    /// <summary>The MCP mode works only with all of its settings in place.</summary>
+    public bool McpEnabled() =>
+        !string.IsNullOrWhiteSpace(McpUpstream) && McpSecret.Trim().Length >= 32 && PublicOrigin().Length > 0;
+
+    /// <summary>"https://example.org" of <see cref="PublicUrl"/>, empty when it is not a plain site address.</summary>
+    public string PublicOrigin()
+    {
+        var text = PublicUrl.Trim().TrimEnd('/');
+        if (!Uri.TryCreate(text, UriKind.Absolute, out var uri) || uri.Scheme is not ("http" or "https") || uri.AbsolutePath != "/")
+            return "";
+        return uri.GetLeftPart(UriPartial.Authority);
+    }
+
+    public Uri McpUpstreamUri()
+    {
+        var text = McpUpstream.Trim();
+        if (!text.Contains("://", StringComparison.Ordinal))
+            text = "http://" + text;
+        return new Uri(text.TrimEnd('/') + "/");
+    }
+
     /// <summary>The upstream as a base URI, http:// unless it says otherwise.</summary>
     public Uri UpstreamUri()
     {

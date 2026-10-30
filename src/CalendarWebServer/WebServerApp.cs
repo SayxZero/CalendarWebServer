@@ -25,6 +25,8 @@ public static class WebServerApp
         ["--public-server"] = "Web:PublicServerAddress",
         ["--secure-cookie"] = "Web:SecureCookie",
         ["--trusted-proxy"] = "Web:TrustedProxies:0",
+        ["--public-url"] = "Web:PublicUrl",
+        ["--mcp-upstream"] = "Web:McpUpstream",
     };
 
     public static string Version =>
@@ -73,6 +75,13 @@ public static class WebServerApp
             Timeout = Timeout.InfiniteTimeSpan,
         });
         builder.Services.AddSingleton<ApiProxy>();
+        if (options.McpEnabled())
+        {
+            builder.Services.AddSingleton(_ => new McpSeal(options.McpSecret.Trim()));
+            builder.Services.AddSingleton<McpClients>();
+            builder.Services.AddSingleton<McpOAuth>();
+            builder.Services.AddSingleton<McpGateway>();
+        }
 
         var app = builder.Build();
         Configure(app, options);
@@ -103,11 +112,23 @@ public static class WebServerApp
         var proxy = app.Services.GetRequiredService<ApiProxy>();
         app.Map("/api", api => api.Run(proxy.HandleAsync));
 
+        if (options.McpEnabled())
+        {
+            McpOAuth.Map(app);
+            var gateway = app.Services.GetRequiredService<McpGateway>();
+            app.Map("/mcp", mcp => mcp.Run(gateway.HandleAsync));
+        }
+        else if (!string.IsNullOrWhiteSpace(options.McpUpstream))
+        {
+            app.Logger.LogWarning("Режим MCP выключен: нужны PublicUrl (адрес сайта) и McpSecret не короче 32 символов");
+        }
+
         app.MapGet("/web/config", () => Results.Json(new
         {
             service = "cosmos-calendar-web",
             version = Version,
             serverAddress = options.ServerAddressForLinks(),
+            mcpUrl = options.McpEnabled() ? options.PublicOrigin() + "/mcp" : null,
         }));
         app.MapGet("/web/health", (HttpClient client, CancellationToken cancel) => Health(client, options, cancel));
         LegalInfo.Map(app, options);
@@ -127,6 +148,7 @@ public static class WebServerApp
             types.Mappings[".js"] = "text/javascript; charset=utf-8";
             types.Mappings[".mjs"] = "text/javascript; charset=utf-8";
             types.Mappings[".webmanifest"] = "application/manifest+json";
+            types.Mappings[".md"] = "text/markdown; charset=utf-8";
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = files,
@@ -140,6 +162,8 @@ public static class WebServerApp
         app.Logger.LogInformation("Сервер синхронизации: {Upstream}", options.UpstreamUri());
         app.Logger.LogInformation("Папка сайта: {Root}", root ?? "(нет)");
         app.Logger.LogInformation("Папка данных: {DataDir}", options.ResolveDataDir());
+        if (options.McpEnabled())
+            app.Logger.LogInformation("MCP: {Url}, служба {Upstream}", options.PublicOrigin() + "/mcp", options.McpUpstreamUri());
     }
 
     /// <summary>

@@ -201,7 +201,7 @@ public sealed class ApiProxy
     /// A request that changes something must carry the site's header, and an
     /// Origin, when the browser sends one, must be this very site.
     /// </summary>
-    private static bool CameFromThisSite(HttpRequest request)
+    internal static bool CameFromThisSite(HttpRequest request)
     {
         if (!string.Equals(request.Headers[CsrfHeader], CsrfValue, StringComparison.Ordinal))
             return false;

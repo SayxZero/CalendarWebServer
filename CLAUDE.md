@@ -22,7 +22,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 export DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1
 dotnet build CalendarWebServer.sln
-dotnet test CalendarWebServer.sln                                   # 36 тестов + 1 пропущен
+dotnet test CalendarWebServer.sln                                   # 51 тест + 1 пропущен
 WEB_TEST_SERVER=127.0.0.1:8766 dotnet test CalendarWebServer.sln    # и тест с настоящим сервером
 ```
 
@@ -48,6 +48,14 @@ cmd //c "D:\\Prog\\Calendar\\CalendarServer\\run-server.bat" -p 8766 -d <пап�
 `run-server.bat` — только полным путём (`cmd` агента не ищет программы в
 текущей папке, `../ISSUES.md`). Сайт затем открывается во встроенном браузере:
 `http://127.0.0.1:8780/` (как проверять сам сайт — `../CalendarWeb/CLAUDE.md`).
+
+## Режим MCP
+
+`/mcp` и `/oauth/*` существуют, только когда заданы `PublicUrl`, `McpUpstream` и `McpSecret` (не короче 32
+символов). Вход агента — здесь (`McpOAuth`, `McpClients`, `McpSeal`), инструменты — в `../CalendarWebMCP`, куда
+`McpGateway` передаёт запрос с ключом сеанса. Базы для этого нет: всё выданное запечатано секретом.
+Метод, принимающий `HttpContext` и возвращающий `Task<IResult>`, в `MapGet`/`MapPost` передаётся только
+через `Answering()`, иначе результат молча выбрасывается (`../ISSUES.md`).
 
 ## Соглашения
 
