@@ -82,7 +82,7 @@ scp "D:/Prog/Calendar/CalendarWebServer/cosmos-site.tar.gz" dan@IP_СЕРВЕР�
 компьютере нет: создайте его по образцу `legal.example.json`. Без него на странице не будет подвала.
 
 ```bash
-scp "$APPDATA/CalendarPlanner/CalendarWeb/pricing.json" dan@IP_СЕРВЕРА:~/
+scp "C:/Users/Gnome/AppData/Roaming/CalendarPlanner/CalendarWeb/pricing.json" dan@IP_СЕРВЕРА:~/
 ```
 ```bash
 scp "ПУТЬ_К_ФАЙЛУ/legal.json" dan@IP_СЕРВЕРА:~/
