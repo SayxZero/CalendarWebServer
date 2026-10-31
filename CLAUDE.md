@@ -17,12 +17,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 `CLAUDE.md` (порядок коммитов в сабмодулях, правила проверок, окружение),
 `DESDOC.md` и `ISSUES.md` с граблями.
 
+## Ветка site-only
+
+Только страница-презентация, без сервера синхронизации: `SiteOnly.Gate` пускает лишь то, что перечислено в его
+списках, поэтому новая возможность после слияния с `master` остаётся закрытой, пока её туда не добавят. Код
+возможностей не удалён, чтобы слияния оставались маленькими. Тесты общего кода включают всё через
+`AllFeaturesForTests`, эту настройку нельзя задать снаружи. Установка — `deploy/SITE-SETUP.md`, архив —
+`deploy/make-archive.bat`. Эту ветку не вливать в `master`.
+
 ## Сборка и тесты
 
 ```bash
 export DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1
 dotnet build CalendarWebServer.sln
-dotnet test CalendarWebServer.sln                                   # 52 теста + 1 пропущен
+dotnet test CalendarWebServer.sln                                   # 90 проверок + 1 пропущена (на этой ветке)
 WEB_TEST_SERVER=127.0.0.1:8766 dotnet test CalendarWebServer.sln    # и тест с настоящим сервером
 ```
 

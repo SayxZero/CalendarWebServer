@@ -85,9 +85,16 @@ public sealed class WebOptions
     /// <summary>The tests read the documents of clients from a table instead of the Internet.</summary>
     public Func<Uri, CancellationToken, Task<string?>>? ClientMetadataFetcher { get; set; }
 
+    /// <summary>
+    /// The branch site-only keeps every feature closed (<see cref="SiteOnly"/>), and no
+    /// setting opens them: this is not read from the settings. The tests of the code the
+    /// branch shares with master turn it on.
+    /// </summary>
+    internal bool AllFeaturesForTests { get; set; }
+
     /// <summary>The MCP mode works only with all of its settings in place.</summary>
     public bool McpEnabled() =>
-        !string.IsNullOrWhiteSpace(McpUpstream) && McpSecret.Trim().Length >= 32 && PublicOrigin().Length > 0;
+        AllFeaturesForTests && !string.IsNullOrWhiteSpace(McpUpstream) && McpSecret.Trim().Length >= 32 && PublicOrigin().Length > 0;
 
     /// <summary>"https://example.org" of <see cref="PublicUrl"/>, empty when it is not a plain site address.</summary>
     public string PublicOrigin()

@@ -8,6 +8,9 @@ if (args.Contains("--help") || args.Contains("-h") || args.Contains("/?"))
     Console.WriteLine($"""
         CalendarWebServer {WebServerApp.Version} — сайт «Космос календаря»
 
+        Ветка site-only: только страница-презентация. Планера, аккаунтов и MCP нет, сервер
+        синхронизации не нужен, и ключи --upstream и --public-server ничего не меняют.
+
         Отдаёт страницу сайта и передаёт её запросы серверу синхронизации
         (CalendarServer): аккаунты и записи сайта — это аккаунты и записи сервера.
 

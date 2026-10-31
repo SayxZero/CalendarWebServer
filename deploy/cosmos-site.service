@@ -1,0 +1,24 @@
+[Unit]
+Description=Cosmos Calendar: the presentation site
+After=network.target
+
+[Service]
+Type=simple
+User=cosmos-site
+Group=cosmos-site
+WorkingDirectory=/opt/cosmos-site
+Environment=DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1
+# Listen on localhost only: nginx in front handles the outside world.
+ExecStart=/usr/bin/dotnet /opt/cosmos-site/CalendarWebServer.dll --host 127.0.0.1 --port 8138 --web-root /opt/cosmos-site/site --data-dir /opt/cosmos-site/data --trusted-proxy 127.0.0.1
+Restart=on-failure
+RestartSec=3
+
+# Sandbox: the site only reads, its data folder included.
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/opt/cosmos-site/data
+
+[Install]
+WantedBy=multi-user.target

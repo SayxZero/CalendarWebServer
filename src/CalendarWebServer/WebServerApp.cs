@@ -108,6 +108,8 @@ public static class WebServerApp
         }
 
         app.Use(SecurityHeaders.Apply);
+        if (!options.AllFeaturesForTests)
+            app.Use(SiteOnly.Gate);
 
         var proxy = app.Services.GetRequiredService<ApiProxy>();
         app.Map("/api", api => api.Run(proxy.HandleAsync));
@@ -159,7 +161,10 @@ public static class WebServerApp
             });
         }
         app.Logger.LogInformation("Космос календарь: сайт {Version}, порт {Port}", Version, options.Port);
-        app.Logger.LogInformation("Сервер синхронизации: {Upstream}", options.UpstreamUri());
+        if (options.AllFeaturesForTests)
+            app.Logger.LogInformation("Сервер синхронизации: {Upstream}", options.UpstreamUri());
+        else
+            app.Logger.LogInformation("Только сайт: планера, аккаунтов и MCP здесь нет, сервер синхронизации не нужен");
         app.Logger.LogInformation("Папка сайта: {Root}", root ?? "(нет)");
         app.Logger.LogInformation("Папка данных: {DataDir}", options.ResolveDataDir());
         if (options.McpEnabled())

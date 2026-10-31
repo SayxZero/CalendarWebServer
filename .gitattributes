@@ -12,3 +12,6 @@
 # Read inside Linux containers, where a CR becomes part of the line.
 Dockerfile text eol=lf
 *.dockerignore text eol=lf
+deploy/*.service text eol=lf
+deploy/*.conf text eol=lf
+deploy/*.bat text eol=crlf

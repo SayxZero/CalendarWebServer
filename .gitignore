@@ -3,6 +3,8 @@
 bin/
 obj/
 /publish/
+/publish-site/
+/cosmos-site.tar.gz
 
 # Test results and coverage
 TestResults/

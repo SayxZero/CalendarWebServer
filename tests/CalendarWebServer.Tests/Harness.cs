@@ -58,6 +58,7 @@ public sealed class Harness : IAsyncDisposable
 
         var site = WebServerApp.Build(Array.Empty<string>(), options =>
         {
+            options.AllFeaturesForTests = true;
             options.Host = "127.0.0.1";
             options.Port = 0;
             options.Upstream = upstreamAddress ?? upstreamUri.ToString();
